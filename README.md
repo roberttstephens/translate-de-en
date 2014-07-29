@@ -1,4 +1,4 @@
-Translate a word/phrase from german to english using the first result from dict.cc.
+Translate a word/phrase from german to english using a dictionary lookup. Not intended for public use. If you wish to use this, you must supply your own tab delimited dictionary file at $XDG\_DATA\_HOME/translate\_de\_en/dictionary.txt.
 
 ## Requirements
 This requires python 3 and will _NOT_ run under python 2.
