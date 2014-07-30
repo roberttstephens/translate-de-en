@@ -13,7 +13,7 @@ The first column is the german word and the second column is the english word.
 
 ## Usage
 
-    usage: translate_de_en [-h] [--refresh] word
+    usage: translate_de_en.py [-h] [--refresh] [--multiple] word
     
     Translate a german word to english.
     
@@ -23,8 +23,11 @@ The first column is the german word and the second column is the english word.
     optional arguments:
       -h, --help  show this help message and exit
       --refresh   Refresh the database.
+      --multiple  Return up to 3 matching english words
+
 
 
 ## Examples
 
     translate_de_en freund
+    translate_de_en --refresh --multiple freund

@@ -14,21 +14,6 @@ DIRECTORY = xdg.BaseDirectory.save_data_path('translate_de_en')
 CONN = sqlite3.connect(os.path.join(DIRECTORY, 'dictionary.db'))
 C = CONN.cursor()
 
-def get_dict():
-    """
-    Convert the text file into a python dictionary.
-    """
-    dictionary = {}
-    with open(os.path.join(DIRECTORY, 'dictionary.txt')) as dictionary_file:
-        for line in dictionary_file:
-            german, english, _ = line.split("\t")
-            german = re.sub(r'{.*}', '', german)
-            german = re.sub(r'\[.*\]', '', german)
-            german = german.strip()
-            german = german.lower()
-            dictionary[german] = english
-    return dictionary
-
 def get_word(word):
     """
     Get the english word when given a german word.
@@ -41,11 +26,22 @@ def get_word(word):
     if result:
         return result[0]
 
+def get_words(word):
+    """
+    Get up to 3 english words matching a german word.
+    """
+    C.execute(
+        "SELECT english FROM dictionary WHERE german=? LIMIT 3",
+        tuple([word.lower()])
+    )
+    result = C.fetchall()
+    if result:
+        return [item[0] for item in result]
+
 def refresh_db():
     """
     Save the text file into a sqlite database and table.
     """
-    dictionary = get_dict()
     C.execute(
         '''
         DROP TABLE if exists dictionary
@@ -56,8 +52,16 @@ def refresh_db():
         CREATE TABLE dictionary (german text, english text)
         '''
     )
-    dictionary = get_dict()
-    C.executemany('INSERT INTO dictionary VALUES (?, ?)', dictionary.items())
+    with open(os.path.join(DIRECTORY, 'dictionary.txt')) as dictionary_file:
+        for line in dictionary_file:
+            sections = line.split("\t")
+            german = sections[0]
+            english = sections[1]
+            german = re.sub(r'{.*}', '', german)
+            german = re.sub(r'\[.*\]', '', german)
+            german = german.strip()
+            german = german.lower()
+            C.execute('INSERT INTO dictionary VALUES (?, ?)', (german, english))
     CONN.commit()
 
 
@@ -73,13 +77,23 @@ def main():
         action='store_true',
         help='Refresh the database.'
     )
+    parser.add_argument(
+        '--multiple',
+        action='store_true',
+        help='Return up to 3 matching english words'
+    )
     parser.add_argument('word', help='The word to translate to german.')
     args = parser.parse_args()
     if args.refresh:
         refresh_db()
-    english = get_word(args.word)
-    if english:
-        print(english)
+    if args.multiple:
+        words = get_words(args.word)
+        if words:
+            print(','.join(words))
+    else:
+        english = get_word(args.word)
+        if english:
+            print(english)
 
 if __name__ == '__main__':
     main()
