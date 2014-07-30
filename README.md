@@ -8,12 +8,12 @@ This requires python 3 and will _NOT_ run under python 2.
 Supply a tab delimited dictionary at $XDG\_DATA\_HOME/translate\_de\_en/dictionary.txt.
 The first column is the german word and the second column is the english word.
 
-    pip install git+https://github.com/roberttstephens/translate_de_en.git
+    pip install git+https://github.com/roberttstephens/translate-de-en.git
 
 
 ## Usage
 
-    usage: translate_de_en.py [-h] [--refresh] word
+    usage: translate_de_en [-h] [--refresh] word
     
     Translate a german word to english.
     
@@ -27,4 +27,4 @@ The first column is the german word and the second column is the english word.
 
 ## Examples
 
-    translate_de_en.py freund
+    translate_de_en freund
